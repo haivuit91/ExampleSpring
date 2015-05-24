@@ -30,12 +30,14 @@
 		<property name="username" value="root" />
 		<property name="password" value="123456" />
 	</bean>
-
-	<!-- <bean id="userService" class="com.asiantech.haivu.spring.dao.impl.UserDaoImpl"> -->
-	<!-- <property name="dataSource" ref="dataSource" /> -->
-	<!-- </bean> -->
-
 	<bean id="userDao" class="com.asiantech.haivu.spring.dao.impl.UserDaoImpl" />
 	<bean id="userService" class="com.asiantech.haivu.spring.service.impl.UserServiceImpl" />
+	<!-- <bean -->
+	<!-- class="org.springframework.data.web.PageableHandlerMethodArgumentResolver"> -->
+	<!-- <property name="maxPageSize" value="7" /> -->
+	<!-- <property name="oneIndexedParameters" value="true" /> -->
+	<!-- <property name="pageParameterName" value="page.page" /> -->
+	<!-- <property name="sizeParameterName" value="page.size" /> -->
+	<!-- </bean> -->
 
 </beans>

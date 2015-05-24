@@ -46,11 +46,11 @@
 	</nav>
 	<div class="container" style="margin-top: 100px">
 		<div class="row">
-			<form:select path="">
-				<form:options itemLabel="5" />
-				<form:options itemLabel="10" />
-				<form:options itemLabel="15" />
-			</form:select>
+			<%-- 			<form:select path=""> --%>
+			<%-- 				<form:options itemLabel="5" /> --%>
+			<%-- 				<form:options itemLabel="10" /> --%>
+			<%-- 				<form:options itemLabel="15" /> --%>
+			<%-- 			</form:select> --%>
 			<table id="table_user" class="table table-bordered">
 				<thead>
 					<tr>
@@ -72,30 +72,55 @@
 							<td>${listUser.firstName}</td>
 							<td>${listUser.lastName}</td>
 							<td>${listUser.email}</td>
-							<td><a href="edit-user?userId=${listUser.userId}">Edit</a> <a
-								href="delete-user?userId=${listUser.userId}">Delete</a></td>
+							<td><a
+								href="edit-user/?page=${currentPage}&userId=${listUser.userId}">Edit</a>
+								<a
+								href="delete-user?page=${currentPage }&userId=${listUser.userId}">Delete</a></td>
 						</tr>
 					</c:forEach>
 				</tbody>
 			</table>
 			<nav>
 			<ul class="pagination">
-				<li><a href="#" aria-label="Previous"> <span
-						aria-hidden="true">&laquo;</span>
-				</a></li>
-				<li><a href="#">1</a></li>
-				<li><a href="#">2</a></li>
-				<li><a href="#">3</a></li>
-				<li><a href="#">4</a></li>
-				<li><a href="#">5</a></li>
-				<li><a href="#" aria-label="Next"> <span aria-hidden="true">&raquo;</span>
-				</a></li>
+				<c:choose>
+					<c:when test="${currentPage != 1}">
+						<li><a href="users-management?page=${currentPage - 1}"
+							aria-label="Previous"> <span aria-hidden="true">&laquo;</span>
+						</a></li>
+					</c:when>
+					<c:otherwise>
+						<li class="disabled"><a href="" aria-label="Next"><span
+								aria-hidden="true">&laquo;</span>
+					</c:otherwise>
+				</c:choose>
+				<c:forEach begin="1" end="${pageSize}" var="i">
+					<c:choose>
+						<c:when test="${currentPage eq i}">
+							<li class="active"><a href="">${i}</a></li>
+						</c:when>
+						<c:otherwise>
+							<li><a href="users-management?page=${i}">${i}</a></li>
+						</c:otherwise>
+					</c:choose>
+				</c:forEach>
+				<c:choose>
+					<c:when test="${currentPage lt pageSize}">
+						<li><a href="users-management?page=${currentPage + 1}"
+							aria-label="Next"> <span aria-hidden="true">&raquo;</span>
+						</a></li>
+					</c:when>
+					<c:otherwise>
+						<li class="disabled"><a href="" aria-label="Next"><span
+								aria-hidden="true">&raquo;</span>
+					</c:otherwise>
+				</c:choose>
 			</ul>
 			</nav>
 		</div>
 		<div id="row">
 			<form:form class="form-inline" action="save-user" method="post"
 				modelAttribute="user">
+				<input type="hidden" value="${currentPage}" />
 				<form:hidden path="userId" />
 				<div class="form-group">
 					<form:input class="form-control" placeholder="User name"

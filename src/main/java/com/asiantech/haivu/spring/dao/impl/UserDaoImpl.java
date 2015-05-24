@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-import javax.servlet.jsp.tagext.TryCatchFinally;
 import javax.sql.DataSource;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +19,8 @@ public class UserDaoImpl implements UserDao {
 	@Autowired
 	private DataSource dataSource;
 
+	private int pageNumber;
+
 	public void setDataSource(DataSource dataSource) {
 		this.dataSource = dataSource;
 	}
@@ -27,7 +28,7 @@ public class UserDaoImpl implements UserDao {
 	@Override
 	public List<User> getListUser() {
 		List<User> userList = new ArrayList<>();
-		String sql = "SELECT * FROM User";
+		String sql = "SELECT * FROM User ORDER BY userID DESC";
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
@@ -205,17 +206,18 @@ public class UserDaoImpl implements UserDao {
 	}
 
 	@Override
-	public List<User> getUserLimit(int pageLimit, int pageNum) {
+	public List<User> getUserPage(int pageSize, int pageNumber) {
 		List<User> userList = new ArrayList<User>();
-		String sql = "SELECT * FROM User LIMIT ?, ?";
+		String sql = "SELECT SQL_CALC_FOUND_ROWS * FROM User ORDER BY userID DESC LIMIT ? OFFSET ?";
+		// String sql = "SELECT * FROM User LIMIT ?, ?";
 		Connection conn = null;
 		PreparedStatement ps = null;
 		ResultSet rs = null;
 		try {
 			conn = dataSource.getConnection();
 			ps = conn.prepareStatement(sql);
-			ps.setInt(1, pageLimit);
-			ps.setInt(2, pageNum);
+			ps.setInt(1, pageNumber);
+			ps.setInt(2, pageSize);
 			rs = ps.executeQuery();
 			while (rs.next()) {
 				User user = new User();
@@ -228,6 +230,10 @@ public class UserDaoImpl implements UserDao {
 				user.setActive(rs.getBoolean("isActive"));
 				userList.add(user);
 			}
+			rs.close();
+			rs = ps.executeQuery("SELECT FOUND_ROWS()");
+			if (rs.next())
+				this.pageNumber = rs.getInt(1);
 		} catch (SQLException e) {
 			throw new RuntimeException(e);
 
@@ -242,5 +248,9 @@ public class UserDaoImpl implements UserDao {
 			}
 		}
 		return userList;
+	}
+
+	public int getPageNumber() {
+		return pageNumber;
 	}
 }

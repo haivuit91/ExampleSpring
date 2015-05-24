@@ -53,8 +53,13 @@ public class UserServiceImpl implements UserService {
 	}
 
 	@Override
-	public List<User> getUserLimit(int pageLimit, int pageNum) {
-		return userDao.getUserLimit(pageLimit, pageNum);
+	public List<User> getUserPage(int pageSize, int pageNumber) {
+		return userDao.getUserPage(pageSize, pageNumber);
+	}
+
+	@Override
+	public int getPageNumber() {
+		return userDao.getPageNumber();
 	}
 
 }

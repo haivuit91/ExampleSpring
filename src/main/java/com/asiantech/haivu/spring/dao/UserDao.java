@@ -16,6 +16,8 @@ public interface UserDao {
 
 	boolean delUser(int userId);
 
-	List<User> getUserLimit(int pageNum, int pageLimit);
+	List<User> getUserPage(int pageSize, int pageNumber);
+
+	int getPageNumber();
 
 }

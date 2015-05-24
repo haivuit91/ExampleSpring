@@ -18,6 +18,8 @@ public interface UserService {
 
 	boolean delUser(int userId);
 
-	List<User> getUserLimit(int pageLimit, int pageNum);
+	List<User> getUserPage(int pageSize, int pageNumber);
+
+	int getPageNumber();
 
 }

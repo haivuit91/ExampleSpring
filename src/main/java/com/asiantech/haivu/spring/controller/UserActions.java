@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.ModelAttribute;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -25,12 +26,29 @@ public class UserActions {
 	private UserService userSv;
 
 	@RequestMapping(value = "users-management", method = RequestMethod.GET)
-	public ModelAndView listUser(ModelAndView model) {
-		// Show list user
-		List<User> listUser = userSv.getListUser();
-		model.addObject("listUser", listUser);
+	public ModelAndView getPage(@RequestParam(required = false) Integer page,
+			ModelAndView model) {
+		int currentPage = 1;
+		int maxRow = 3;
+		if (page != null)
+			currentPage = page;
 
-		// Get object user
+		int rowCount = userSv.getListUser().size();
+
+		int pageSize = (int) Math.ceil(rowCount * 1.0 / maxRow);
+
+		List<User> listUser = userSv.getUserPage((currentPage - 1) * maxRow,
+				maxRow);
+
+		System.out.println(currentPage);
+		System.out.println(maxRow);
+		System.out.println(rowCount);
+		System.out.println(pageSize);
+
+		model.addObject("listUser", listUser);
+		model.addObject("pageSize", pageSize);
+		model.addObject("currentPage", currentPage);
+
 		User user = new User();
 		model.addObject("user", user);
 
@@ -38,20 +56,25 @@ public class UserActions {
 		return model;
 	}
 
-	@RequestMapping(value = "user-page", method = RequestMethod.GET)
-	public ModelAndView getPage(@RequestParam(value = "page") int page,
-			ModelAndView model) {
-		
-		return null;
-	}
-
 	@RequestMapping(value = "edit-user", method = RequestMethod.GET)
-	public ModelAndView editContact(ModelAndView model,
+	public ModelAndView editContact(
+			@RequestParam(required = false) Integer page,
+			@RequestParam(required = false) Integer userId, ModelAndView model,
 			HttpServletRequest request) {
-		List<User> listUser = userSv.getListUser();
-		model.addObject("listUser", listUser);
+		int pageNumber = 1;
+		int pageSize = 3;
+		if (page != null)
+			pageNumber = page;
 
-		int userId = Integer.parseInt(request.getParameter("userId"));
+		int noOfRecords = userSv.getPageNumber();
+		int noOfPages = (int) Math.ceil(noOfRecords * 1.0 / pageSize);
+
+		List<User> listUser = userSv.getUserPage((pageNumber - 1) * pageSize,
+				pageSize);
+		model.addObject("listUser", listUser);
+		model.addObject("noOfPages", noOfPages);
+		model.addObject("currentPage", pageNumber);
+
 		User user = userSv.getUser(userId);
 		model.addObject("user", user);
 		model.setViewName("user-list");
@@ -69,10 +92,11 @@ public class UserActions {
 	}
 
 	@RequestMapping(value = "delete-user", method = RequestMethod.GET)
-	public ModelAndView deleteContact(HttpServletRequest request) {
-		int userId = Integer.parseInt(request.getParameter("userId"));
+	public ModelAndView deleteContact(
+			@RequestParam(required = false) Integer page,
+			@RequestParam(required = false) Integer userId) {
 		userSv.delUser(userId);
-		return new ModelAndView("redirect:users-management");
+		return new ModelAndView("redirect:users-management?page=" + page);
 	}
 
 }
