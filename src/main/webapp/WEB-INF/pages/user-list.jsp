@@ -14,8 +14,14 @@
 <link href="<c:url value="/resources/css/bootstrap-theme.min.css" />"
 	rel="stylesheet">
 <script src="<c:url value="/resources/js/bootstrap.min.js" />"></script>
+<script src="<c:url value="/resources/js/jquery.min.js" />"></script>
 
-<script src="<c:url value="/resources/js/jquery-1.7.2.min.js" />"></script>
+<!-- Bootstrap Validator -->
+<link
+	href="<c:url value="/resources/bootstrapValidator/css/bootstrapValidator.css" />"
+	rel="stylesheet">
+<script
+	src="<c:url value="/resources/bootstrapValidator/js/bootstrapValidator.js" />"></script>
 
 </head>
 <body>
@@ -55,10 +61,10 @@
 				<thead>
 					<tr>
 						<th>ID</th>
-						<th>User Name</th>
+						<th>Username</th>
 						<th>Password</th>
-						<th>First Name</th>
-						<th>Last Name</th>
+						<th>First name</th>
+						<th>Last name</th>
 						<th>Email</th>
 						<th>Action</th>
 					</tr>
@@ -118,34 +124,125 @@
 			</nav>
 		</div>
 		<div id="row">
-			<form:form class="form-inline" action="save-user" method="post"
-				modelAttribute="user">
-				<input type="hidden" value="${currentPage}" />
+			<form:form id="form-user" class="form-horizontal" action="save-user"
+				method="post" modelAttribute="user">
 				<form:hidden path="userId" />
 				<div class="form-group">
-					<form:input class="form-control" placeholder="User name"
-						path="userName" />
+					<label class="col-lg-3 control-label">Username</label>
+					<div class="col-lg-5">
+						<form:input class="form-control" placeholder="User name"
+							path="userName" />
+					</div>
 				</div>
 				<div class="form-group">
-					<form:password class="form-control" placeholder="Password"
-						path="pwd" />
+					<label class="col-lg-3 control-label">Password</label>
+					<div class="col-lg-5">
+						<form:password class="form-control" placeholder="Password"
+							path="pwd" />
+					</div>
 				</div>
 				<div class="form-group">
-					<form:input class="form-control" placeholder="First name"
-						path="firstName" />
+					<label class="col-lg-3 control-label">First name</label>
+					<div class="col-lg-5">
+						<form:input class="form-control" placeholder="First name"
+							path="firstName" />
+					</div>
 				</div>
 				<div class="form-group">
-					<form:input class="form-control" placeholder="Last name"
-						path="lastName" />
+					<label class="col-lg-3 control-label">Last name</label>
+					<div class="col-lg-5">
+						<form:input class="form-control" placeholder="Last name"
+							path="lastName" />
+					</div>
 				</div>
 				<div class="form-group">
-					<form:input class="form-control" placeholder="Email" path="email" />
+					<label class="col-lg-3 control-label">Email</label>
+					<div class="col-lg-5">
+						<form:input class="form-control" placeholder="Email" path="email" />
+					</div>
 				</div>
 				<div class="form-group">
-					<form:button class="btn btn-default" value="Save" name="Save">Save</form:button>
+					<div class="col-lg-9 col-lg-offset-3">
+						<form:button class="btn btn-default" value="Save" name="Save">Save</form:button>
+						<input class="btn btn-default" type="reset" value="Reset" />
+					</div>
 				</div>
 			</form:form>
 		</div>
 	</div>
+
+	<script type="text/javascript">
+		$(document)
+				.ready(
+						function() {
+							$('#form-user')
+									.bootstrapValidator(
+											{
+												message : 'This value is not valid',
+												feedbackIcons : {
+													valid : 'glyphicon glyphicon-ok',
+													invalid : 'glyphicon glyphicon-remove',
+													validating : 'glyphicon glyphicon-refresh'
+												},
+												fields : {
+													userName : {
+														message : 'The user name is not valid',
+														validators : {
+															notEmpty : {
+																message : 'The user name is required and can\'t be empty'
+															},
+															stringLength : {
+																min : 4,
+																max : 10,
+																message : 'The user name must be more than 4 and less than 10 characters long'
+															},
+															regexp : {
+																regexp : /^[a-zA-Z0-9_\.]+$/,
+																message : 'The user name can only consist of alphabetical, number, dot and underscore'
+															}
+														}
+													},
+													pwd : {
+														validators : {
+															notEmpty : {
+																message : 'The password is required and can\'t be empty'
+															},
+															stringLength : {
+																min : 6,
+																max : 30,
+																message : 'The password must be more than 6 and less than 30 characters long'
+															},
+														}
+													},
+													firstName : {
+														message : 'The first name is not valid',
+														validators : {
+															notEmpty : {
+																message : 'The first name is required and can\'t be empty'
+															}
+														}
+													},
+													lastName : {
+														message : 'The last name is not valid',
+														validators : {
+															notEmpty : {
+																message : 'The last name is required and can\'t be empty'
+															}
+														}
+													},
+													email : {
+														validators : {
+															notEmpty : {
+																message : 'The email address is required and can\'t be empty'
+															},
+															emailAddress : {
+																message : 'The input is not a valid email address'
+															}
+														}
+													}
+												}
+											});
+						});
+	</script>
 </body>
 </html>

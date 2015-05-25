@@ -59,21 +59,23 @@ public class UserActions {
 	@RequestMapping(value = "edit-user", method = RequestMethod.GET)
 	public ModelAndView editContact(
 			@RequestParam(required = false) Integer page,
-			@RequestParam(required = false) Integer userId, ModelAndView model,
+			@RequestParam(required = true) Integer userId, ModelAndView model,
 			HttpServletRequest request) {
-		int pageNumber = 1;
-		int pageSize = 3;
+		int currentPage = 1;
+		int maxRow = 3;
 		if (page != null)
-			pageNumber = page;
+			currentPage = page;
 
-		int noOfRecords = userSv.getPageNumber();
-		int noOfPages = (int) Math.ceil(noOfRecords * 1.0 / pageSize);
+		int rowCount = userSv.getListUser().size();
 
-		List<User> listUser = userSv.getUserPage((pageNumber - 1) * pageSize,
-				pageSize);
+		int pageSize = (int) Math.ceil(rowCount * 1.0 / maxRow);
+
+		List<User> listUser = userSv.getUserPage((currentPage - 1) * maxRow,
+				maxRow);
+
 		model.addObject("listUser", listUser);
-		model.addObject("noOfPages", noOfPages);
-		model.addObject("currentPage", pageNumber);
+		model.addObject("pageSize", pageSize);
+		model.addObject("currentPage", currentPage);
 
 		User user = userSv.getUser(userId);
 		model.addObject("user", user);
@@ -82,7 +84,8 @@ public class UserActions {
 	}
 
 	@RequestMapping(value = "save-user", method = RequestMethod.POST)
-	public ModelAndView saveContact(@ModelAttribute User user) {
+	public ModelAndView saveContact(
+			@ModelAttribute User user) {
 		if (user.getUserId() != 0) {
 			userSv.updateUser(user);
 		} else {
@@ -94,7 +97,7 @@ public class UserActions {
 	@RequestMapping(value = "delete-user", method = RequestMethod.GET)
 	public ModelAndView deleteContact(
 			@RequestParam(required = false) Integer page,
-			@RequestParam(required = false) Integer userId) {
+			@RequestParam(required = true) Integer userId) {
 		userSv.delUser(userId);
 		return new ModelAndView("redirect:users-management?page=" + page);
 	}
